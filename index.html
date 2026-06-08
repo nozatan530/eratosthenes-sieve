@@ -20,13 +20,90 @@
     --color-border-secondary: #D8DEE4;
     --color-border-tertiary: #E3E8EC;
     --border-radius-md: 8px;
+
+    --color-primary-bg: #185FA5;
+    --color-primary-text: #E6F1FB;
+    --color-primary-border: #185FA5;
+    --color-primary-hover: #0C447C;
+
+    --color-danger-bg: #FCEBEB;
+    --color-danger-text: #A32D2D;
+    --color-danger-border: #F09595;
+    --color-danger-hover: #F7C1C1;
+
+    --color-tag-bg: #E6F1FB;
+    --color-tag-text: #185FA5;
+
+    --color-prime-bg: #E1EFF8;
+    --color-prime-text: #0B4F73;
+    --color-prime-border: #5B9BC4;
+
+    --color-highlight-bg: #F3E2EE;
+    --color-highlight-text: #74355B;
+    --color-highlight-border: #C98DB7;
+
+    --color-notprime-bg: #FCEEDD;
+    --color-notprime-text: #8A5800;
+    --color-notprime-border: #E3A856;
+
+    --color-hist-prime-bg: #E1EFF8;
+    --color-hist-prime-border: #4A87AD;
+    --color-hist-prime-text: #0B4F73;
+
+    --color-hist-cross-bg: #FCEEDD;
+    --color-hist-cross-border: #C98330;
+    --color-hist-cross-text: #6E4400;
+  }
+  [data-theme="dark"] {
+    --color-text-primary: #ECEDEE;
+    --color-text-secondary: #9BA1A6;
+    --color-background-primary: #1E2226;
+    --color-background-secondary: #16191C;
+    --color-border-secondary: #3A4047;
+    --color-border-tertiary: #2E343A;
+
+    --color-primary-bg: #2B7DD6;
+    --color-primary-text: #EAF4FE;
+    --color-primary-border: #2B7DD6;
+    --color-primary-hover: #4A93E0;
+
+    --color-danger-bg: #3A2426;
+    --color-danger-text: #FF9B9B;
+    --color-danger-border: #6B3A3D;
+    --color-danger-hover: #4A2E31;
+
+    --color-tag-bg: #1B3A57;
+    --color-tag-text: #8FC3F2;
+
+    --color-prime-bg: #1B3A52;
+    --color-prime-text: #8FCBEF;
+    --color-prime-border: #3E7CA6;
+
+    --color-highlight-bg: #3A2638;
+    --color-highlight-text: #E2A8CE;
+    --color-highlight-border: #966A89;
+
+    --color-notprime-bg: #4A3318;
+    --color-notprime-text: #F0BB73;
+    --color-notprime-border: #A87A35;
+
+    --color-hist-prime-bg: #1B3A52;
+    --color-hist-prime-border: #4E8FB8;
+    --color-hist-prime-text: #ABDAF5;
+
+    --color-hist-cross-bg: #4A3318;
+    --color-hist-cross-border: #C99249;
+    --color-hist-cross-text: #F4D2A3;
   }
   * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  html[data-theme="dark"] { color-scheme: dark; }
   body {
     margin: 0;
     font-family: var(--font-sans);
     background: var(--color-background-secondary);
     color: var(--color-text-primary);
+    transition: background 0.2s, color 0.2s;
   }
   .page-wrap {
     max-width: 720px;
@@ -37,6 +114,16 @@
     position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
     overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
   }
+  .theme-toggle-row { display: flex; justify-content: flex-end; margin-bottom: 0.5rem; }
+  #theme-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; font-size: 13px; border-radius: 999px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  #theme-toggle:hover { background: var(--color-background-secondary); }
 </style>
 
 <style>
@@ -49,10 +136,10 @@
   .controls-row button { padding: 6px 16px; font-size: 13px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; transition: background 0.15s; }
   .controls-row button:hover:not(:disabled) { background: var(--color-background-secondary); }
   .controls-row button:disabled { opacity: 0.35; cursor: default; }
-  .controls-row button.primary { background: #185FA5; color: #E6F1FB; border-color: #185FA5; }
-  .controls-row button.primary:hover:not(:disabled) { background: #0C447C; }
-  .controls-row button.danger { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
-  .controls-row button.danger:hover:not(:disabled) { background: #F7C1C1; }
+  .controls-row button.primary { background: var(--color-primary-bg); color: var(--color-primary-text); border-color: var(--color-primary-border); }
+  .controls-row button.primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+  .controls-row button.danger { background: var(--color-danger-bg); color: var(--color-danger-text); border-color: var(--color-danger-border); }
+  .controls-row button.danger:hover:not(:disabled) { background: var(--color-danger-hover); }
 
   .settings-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 1rem; font-size: 13px; color: var(--color-text-secondary); }
   .settings-row label { display: flex; align-items: center; gap: 6px; }
@@ -63,23 +150,23 @@
   .legend-dot { width: 14px; height: 14px; border-radius: 3px; border: 0.5px solid var(--color-border-tertiary); flex-shrink: 0; }
 
   #status-bar { font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 12px; margin-bottom: 1rem; min-height: 36px; display: flex; align-items: center; gap: 8px; }
-  #status-bar .tag { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 99px; background: #E6F1FB; color: #185FA5; }
+  #status-bar .tag { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 99px; background: var(--color-tag-bg); color: var(--color-tag-text); }
 
   .main-area { display: flex; gap: 12px; }
   .grid-wrap { flex: 1; min-width: 0; }
   #grid { display: grid; gap: 4px; }
 
   .num-cell { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; border-radius: 4px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-secondary); transition: background 0.2s, color 0.2s, border-color 0.2s; aspect-ratio: 1; cursor: default; user-select: none; }
-  .num-cell.not-prime { background: #FCEBEB; color: #A32D2D; border-color: #F09595; text-decoration: line-through; }
-  .num-cell.highlighted { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
-  .num-cell.prime { background: #EAF3DE; color: #3B6D11; border-color: #97C459; font-weight: 500; }
+  .num-cell.not-prime { background: var(--color-notprime-bg); color: var(--color-notprime-text); border-color: var(--color-notprime-border); text-decoration: line-through; }
+  .num-cell.highlighted { background: var(--color-highlight-bg); color: var(--color-highlight-text); border-color: var(--color-highlight-border); }
+  .num-cell.prime { background: var(--color-prime-bg); color: var(--color-prime-text); border-color: var(--color-prime-border); font-weight: 500; }
 
   .history-panel { width: 190px; flex-shrink: 0; }
   .history-panel h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 8px; }
   #history { height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
   .h-item { font-size: 11px; padding: 5px 8px; border-radius: var(--border-radius-md); color: var(--color-text-primary); border-left: 3px solid; }
-  .h-item.h-prime { background: #EAF3DE; border-color: #639922; color: #27500A; }
-  .h-item.h-cross { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; }
+  .h-item.h-prime { background: var(--color-hist-prime-bg); border-color: var(--color-hist-prime-border); color: var(--color-hist-prime-text); }
+  .h-item.h-cross { background: var(--color-hist-cross-bg); border-color: var(--color-hist-cross-border); color: var(--color-hist-cross-text); }
   .h-item.h-info  { background: var(--color-background-secondary); border-color: var(--color-border-secondary); color: var(--color-text-secondary); }
 
   .stats-row { display: flex; gap: 8px; margin-top: 1rem; }
@@ -97,6 +184,12 @@
 <div class="page-wrap">
 <div class="sieve-wrap">
   <h2 class="sr-only">エラトステネスのふるい — 素数発見ツール（1〜210）</h2>
+  <div class="theme-toggle-row">
+    <button id="theme-toggle" type="button" aria-label="ライトモードとダークモードを切り替え">
+      <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
+      <span id="theme-toggle-label">ダークモード</span>
+    </button>
+  </div>
   <div class="sieve-header">
     <h2>エラトステネスのふるい</h2>
     <p>素数を見つけ出す視覚的なアルゴリズム</p>
@@ -135,9 +228,9 @@
 
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:var(--color-background-primary)"></div>未チェック</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#FAEEDA;border-color:#EF9F27"></div>現在の素数</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#EAF3DE;border-color:#97C459"></div>素数</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#FCEBEB;border-color:#F09595"></div>素数でない</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-highlight-bg);border-color:var(--color-highlight-border)"></div>現在の素数</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-prime-bg);border-color:var(--color-prime-border)"></div>素数</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-notprime-bg);border-color:var(--color-notprime-border)"></div>素数でない</div>
   </div>
 
   <div id="status-bar">
@@ -161,6 +254,50 @@
 </div>
 
 <script>
+(function(){
+  const STORAGE_KEY = 'eratosthenes-sieve-theme';
+  const root = document.documentElement;
+  const toggleBtn = document.getElementById('theme-toggle');
+  const toggleIcon = document.getElementById('theme-toggle-icon');
+  const toggleLabel = document.getElementById('theme-toggle-label');
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      toggleIcon.textContent = '☀️';
+      toggleLabel.textContent = 'ライトモード';
+    } else {
+      root.removeAttribute('data-theme');
+      toggleIcon.textContent = '🌙';
+      toggleLabel.textContent = 'ダークモード';
+    }
+  }
+
+  function getInitialTheme() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  let currentTheme = getInitialTheme();
+  applyTheme(currentTheme);
+
+  toggleBtn.addEventListener('click', () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    localStorage.setItem(STORAGE_KEY, currentTheme);
+  });
+
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        currentTheme = e.matches ? 'dark' : 'light';
+        applyTheme(currentTheme);
+      }
+    });
+  }
+})();
+
 (function(){
   const gridEl = document.getElementById('grid');
   const histEl = document.getElementById('history');
