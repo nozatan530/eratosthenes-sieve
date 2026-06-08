@@ -1,0 +1,307 @@
+
+<style>
+  .sieve-wrap { padding: 1rem 0; font-family: var(--font-sans); }
+  .sieve-header { text-align: center; margin-bottom: 1.5rem; }
+  .sieve-header h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .sieve-header p { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+
+  .controls-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 1rem; }
+  .controls-row button { padding: 6px 16px; font-size: 13px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; transition: background 0.15s; }
+  .controls-row button:hover:not(:disabled) { background: var(--color-background-secondary); }
+  .controls-row button:disabled { opacity: 0.35; cursor: default; }
+  .controls-row button.primary { background: #185FA5; color: #E6F1FB; border-color: #185FA5; }
+  .controls-row button.primary:hover:not(:disabled) { background: #0C447C; }
+  .controls-row button.danger { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
+  .controls-row button.danger:hover:not(:disabled) { background: #F7C1C1; }
+
+  .settings-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 1rem; font-size: 13px; color: var(--color-text-secondary); }
+  .settings-row label { display: flex; align-items: center; gap: 6px; }
+  .settings-row select, .settings-row input[type=number] { border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); border-radius: var(--border-radius-md); padding: 4px 8px; font-size: 13px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1rem; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 3px; border: 0.5px solid var(--color-border-tertiary); flex-shrink: 0; }
+
+  #status-bar { font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 12px; margin-bottom: 1rem; min-height: 36px; display: flex; align-items: center; gap: 8px; }
+  #status-bar .tag { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 99px; background: #E6F1FB; color: #185FA5; }
+
+  .main-area { display: flex; gap: 12px; }
+  .grid-wrap { flex: 1; min-width: 0; }
+  #grid { display: grid; gap: 4px; }
+
+  .num-cell { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; border-radius: 4px; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-secondary); transition: background 0.2s, color 0.2s, border-color 0.2s; aspect-ratio: 1; cursor: default; user-select: none; }
+  .num-cell.not-prime { background: #FCEBEB; color: #A32D2D; border-color: #F09595; text-decoration: line-through; }
+  .num-cell.highlighted { background: #FAEEDA; color: #854F0B; border-color: #EF9F27; }
+  .num-cell.prime { background: #EAF3DE; color: #3B6D11; border-color: #97C459; font-weight: 500; }
+
+  .history-panel { width: 190px; flex-shrink: 0; }
+  .history-panel h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 8px; }
+  #history { height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .h-item { font-size: 11px; padding: 5px 8px; border-radius: var(--border-radius-md); color: var(--color-text-primary); border-left: 3px solid; }
+  .h-item.h-prime { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .h-item.h-cross { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; }
+  .h-item.h-info  { background: var(--color-background-secondary); border-color: var(--color-border-secondary); color: var(--color-text-secondary); }
+
+  .stats-row { display: flex; gap: 8px; margin-top: 1rem; }
+  .stat-card { flex: 1; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; text-align: center; }
+  .stat-card .val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .stat-card .lbl { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  @media (max-width: 520px) {
+    .history-panel { display: none; }
+    .main-area { flex-direction: column; }
+  }
+</style>
+
+<div class="sieve-wrap">
+  <h2 class="sr-only">エラトステネスのふるい — 素数発見ツール（1〜210）</h2>
+  <div class="sieve-header">
+    <h2>エラトステネスのふるい</h2>
+    <p>素数を見つけ出す視覚的なアルゴリズム</p>
+  </div>
+
+  <div class="controls-row">
+    <button id="btn-start" class="primary">開始</button>
+    <button id="btn-next" disabled>次のステップ</button>
+    <button id="btn-auto" disabled>自動実行</button>
+    <button id="btn-reset" class="danger" disabled>リセット</button>
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-secondary);margin-left:auto;">
+      速度
+      <select id="speed-sel">
+        <option value="900">遅い</option>
+        <option value="450" selected>普通</option>
+        <option value="150">速い</option>
+        <option value="40">超速</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="settings-row">
+    <label>
+      列数
+      <input type="number" id="col-input" value="10" min="5" max="21" style="width:52px;">
+    </label>
+    <label>
+      上限
+      <select id="max-sel">
+        <option value="100">100</option>
+        <option value="210" selected>210</option>
+        <option value="500">500</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-background-primary)"></div>未チェック</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FAEEDA;border-color:#EF9F27"></div>現在の素数</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EAF3DE;border-color:#97C459"></div>素数</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#FCEBEB;border-color:#F09595"></div>素数でない</div>
+  </div>
+
+  <div id="status-bar">
+    <span>「開始」ボタンを押して始めてください</span>
+  </div>
+
+  <div class="main-area">
+    <div class="grid-wrap">
+      <div id="grid"></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="val" id="stat-prime">0</div><div class="lbl">素数の個数</div></div>
+        <div class="stat-card"><div class="val" id="stat-step">0</div><div class="lbl">ステップ数</div></div>
+      </div>
+    </div>
+    <div class="history-panel">
+      <h3>ステップ履歴</h3>
+      <div id="history"><div class="h-item h-info">履歴はここに表示されます</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const gridEl = document.getElementById('grid');
+  const histEl = document.getElementById('history');
+  const statusEl = document.getElementById('status-bar');
+  const statPrime = document.getElementById('stat-prime');
+  const statStep = document.getElementById('stat-step');
+  const colInput = document.getElementById('col-input');
+  const maxSel = document.getElementById('max-sel');
+  const speedSel = document.getElementById('speed-sel');
+  const btnStart = document.getElementById('btn-start');
+  const btnNext = document.getElementById('btn-next');
+  const btnAuto = document.getElementById('btn-auto');
+  const btnReset = document.getElementById('btn-reset');
+
+  let MAX = 210, COLS = 10;
+  let nums = [], started = false, autoRunning = false, timer = null;
+  let currentPrime = 2, primeCount = 0, stepCount = 0;
+  let phase = 'find'; // 'find' | 'cross'
+  let crossIdx = 0;
+
+  function setStatus(msg, tag) {
+    statusEl.innerHTML = (tag ? `<span class="tag">${tag}</span>` : '') + `<span>${msg}</span>`;
+  }
+
+  function addHistory(msg, type) {
+    if (histEl.querySelector('.h-info') && histEl.children.length === 1) histEl.innerHTML = '';
+    const d = document.createElement('div');
+    d.className = `h-item h-${type}`;
+    d.textContent = msg;
+    histEl.appendChild(d);
+    histEl.scrollTop = histEl.scrollHeight;
+  }
+
+  function buildGrid() {
+    gridEl.innerHTML = '';
+    nums = [];
+    gridEl.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+    for (let i = 1; i <= MAX; i++) {
+      const el = document.createElement('div');
+      el.className = 'num-cell' + (i === 1 ? ' not-prime' : '');
+      el.textContent = i;
+      gridEl.appendChild(el);
+      nums.push({ n: i, el, crossed: i === 1, prime: false });
+    }
+  }
+
+  function findNextUncrossed(from) {
+    return nums.find(o => o.n >= from && !o.crossed && !o.prime);
+  }
+
+  function markCurrentPrime() {
+    const obj = nums[currentPrime - 1];
+    obj.el.classList.remove('highlighted');
+    obj.el.classList.add('prime');
+    obj.prime = true;
+    primeCount++;
+    statPrime.textContent = primeCount;
+    stepCount++;
+    statStep.textContent = stepCount;
+    addHistory(`${currentPrime} は素数`, 'prime');
+    setStatus(`${currentPrime} の倍数を消していきます`, currentPrime.toString());
+    crossIdx = 2;
+    phase = 'cross';
+  }
+
+  function crossStep() {
+    const m = currentPrime * crossIdx;
+    if (m > MAX) {
+      addHistory(`${currentPrime} の倍数をすべて除去`, 'info');
+      stepCount++;
+      statStep.textContent = stepCount;
+      phase = 'find';
+      findAndHighlight();
+      return;
+    }
+    const obj = nums[m - 1];
+    if (obj && !obj.crossed && !obj.prime) {
+      obj.el.classList.add('not-prime');
+      obj.crossed = true;
+      addHistory(`${m} を除去 (${currentPrime}×${crossIdx})`, 'cross');
+    }
+    crossIdx++;
+    stepCount++;
+    statStep.textContent = stepCount;
+  }
+
+  function findAndHighlight() {
+    const next = findNextUncrossed(currentPrime + (phase === 'find' ? 1 : 0));
+    if (!next) { finish(); return; }
+    currentPrime = next.n;
+    next.el.classList.add('highlighted');
+    setStatus(`素数 ${currentPrime} を発見`, currentPrime.toString());
+    addHistory(`候補: ${currentPrime}`, 'prime');
+    phase = 'find';
+  }
+
+  function processStep() {
+    if (phase === 'find') {
+      markCurrentPrime();
+    } else {
+      crossStep();
+    }
+    if (currentPrime > Math.sqrt(MAX) && phase === 'find') {
+      markRemainingPrimes();
+    }
+  }
+
+  function markRemainingPrimes() {
+    let more = [];
+    nums.forEach(o => {
+      if (!o.crossed && !o.prime && o.n > 1) {
+        o.el.classList.remove('highlighted');
+        o.el.classList.add('prime');
+        o.prime = true;
+        primeCount++;
+        more.push(o.n);
+      }
+    });
+    if (more.length) {
+      statPrime.textContent = primeCount;
+      addHistory(`残りの素数をマーク: ${more.join(', ')}`, 'prime');
+      finish();
+    }
+  }
+
+  function finish() {
+    stopAuto();
+    btnNext.disabled = true;
+    btnAuto.disabled = true;
+    setStatus(`完了！1〜${MAX}の素数は ${primeCount} 個`, '完了');
+    addHistory(`完了: 素数 ${primeCount} 個`, 'info');
+  }
+
+  function startAuto() {
+    autoRunning = true;
+    btnAuto.textContent = '停止';
+    btnAuto.classList.add('danger');
+    btnNext.disabled = true;
+    addHistory('自動実行を開始', 'info');
+    const spd = parseInt(speedSel.value);
+    timer = setInterval(processStep, spd);
+  }
+
+  function stopAuto() {
+    if (!autoRunning) return;
+    autoRunning = false;
+    clearInterval(timer); timer = null;
+    btnAuto.textContent = '自動実行';
+    btnAuto.classList.remove('danger');
+    btnNext.disabled = false;
+  }
+
+  function reset() {
+    stopAuto();
+    started = false; currentPrime = 2; primeCount = 0; stepCount = 0; phase = 'find'; crossIdx = 0;
+    statPrime.textContent = 0; statStep.textContent = 0;
+    btnStart.disabled = false; btnNext.disabled = true; btnAuto.disabled = true; btnReset.disabled = true;
+    histEl.innerHTML = '<div class="h-item h-info">履歴はここに表示されます</div>';
+    setStatus('「開始」ボタンを押して始めてください');
+    MAX = parseInt(maxSel.value);
+    COLS = parseInt(colInput.value) || 10;
+    buildGrid();
+  }
+
+  btnStart.addEventListener('click', () => {
+    started = true;
+    btnStart.disabled = true;
+    btnNext.disabled = false;
+    btnAuto.disabled = false;
+    btnReset.disabled = false;
+    addHistory('開始', 'info');
+    findAndHighlight();
+  });
+
+  btnNext.addEventListener('click', () => { if (started) processStep(); });
+  btnAuto.addEventListener('click', () => { autoRunning ? stopAuto() : startAuto(); });
+  btnReset.addEventListener('click', reset);
+
+  colInput.addEventListener('change', () => { if (!started) { COLS = parseInt(colInput.value)||10; buildGrid(); } });
+  maxSel.addEventListener('change', () => { if (!started) { MAX = parseInt(maxSel.value); buildGrid(); } });
+  speedSel.addEventListener('change', () => { if (autoRunning) { stopAuto(); startAuto(); } });
+
+  MAX = parseInt(maxSel.value);
+  COLS = parseInt(colInput.value);
+  buildGrid();
+})();
+</script>
