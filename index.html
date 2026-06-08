@@ -177,7 +177,7 @@
 
   let MAX = 210, COLS = 10;
   let nums = [], started = false, autoRunning = false, timer = null;
-  let currentPrime = 2, primeCount = 0, stepCount = 0;
+  let currentPrime = 1, primeCount = 0, stepCount = 0;
   let phase = 'find'; // 'find' | 'cross'
   let crossIdx = 0;
 
@@ -315,7 +315,7 @@
 
   function reset() {
     stopAuto();
-    started = false; currentPrime = 2; primeCount = 0; stepCount = 0; phase = 'find'; crossIdx = 0;
+    started = false; currentPrime = 1; primeCount = 0; stepCount = 0; phase = 'find'; crossIdx = 0;
     statPrime.textContent = 0; statStep.textContent = 0;
     btnStart.disabled = false; btnNext.disabled = true; btnAuto.disabled = true; btnReset.disabled = true;
     histEl.innerHTML = '<div class="h-item h-info">履歴はここに表示されます</div>';
