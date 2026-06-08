@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>エラトステネスのふるい — 素数発見ツール</title>
+<title data-i18n="pageTitle">エラトステネスのふるい — 素数発見ツール</title>
 <meta property="og:title" content="エラトステネスのふるい">
 <meta property="og:description" content="1〜210の素数を視覚的に発見するインタラクティブツール">
 <meta property="og:image" content="https://sieve.meetupsensei.com/ogp.jpg">
@@ -124,6 +124,15 @@
     cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
   }
   #theme-toggle:hover { background: var(--color-background-secondary); }
+  #lang-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; font-size: 13px; border-radius: 999px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  #lang-toggle:hover { background: var(--color-background-secondary); }
 </style>
 
 <style>
@@ -183,41 +192,45 @@
 <body>
 <div class="page-wrap">
 <div class="sieve-wrap">
-  <h2 class="sr-only">エラトステネスのふるい — 素数発見ツール（1〜210）</h2>
-  <div class="theme-toggle-row">
-    <button id="theme-toggle" type="button" aria-label="ライトモードとダークモードを切り替え">
+  <h2 class="sr-only" data-i18n="srHeading">エラトステネスのふるい — 素数発見ツール（1〜210）</h2>
+  <div class="theme-toggle-row" style="gap:8px;">
+    <button id="theme-toggle" type="button" aria-label="ライトモードとダークモードを切り替え" data-i18n-aria="themeToggleAria">
       <span id="theme-toggle-icon" aria-hidden="true">🌙</span>
-      <span id="theme-toggle-label">ダークモード</span>
+      <span id="theme-toggle-label" data-i18n="themeToggleLabelLight">ダークモード</span>
+    </button>
+    <button id="lang-toggle" type="button" aria-label="言語を切り替え" data-i18n-aria="langToggleAria">
+      <span aria-hidden="true">🌐</span>
+      <span id="lang-toggle-label">EN</span>
     </button>
   </div>
   <div class="sieve-header">
-    <h2>エラトステネスのふるい</h2>
-    <p>素数を見つけ出す視覚的なアルゴリズム</p>
+    <h2 data-i18n="headerTitle">エラトステネスのふるい</h2>
+    <p data-i18n="headerSubtitle">素数を見つけ出す視覚的なアルゴリズム</p>
   </div>
 
   <div class="controls-row">
-    <button id="btn-start" class="primary">開始</button>
-    <button id="btn-next" disabled>次のステップ</button>
-    <button id="btn-auto" disabled>自動実行</button>
-    <button id="btn-reset" class="danger" disabled>リセット</button>
+    <button id="btn-start" class="primary" data-i18n="btnStart">開始</button>
+    <button id="btn-next" disabled data-i18n="btnNext">次のステップ</button>
+    <button id="btn-auto" disabled data-i18n="btnAutoStart">自動実行</button>
+    <button id="btn-reset" class="danger" disabled data-i18n="btnReset">リセット</button>
     <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--color-text-secondary);margin-left:auto;">
-      速度
+      <span data-i18n="speedLabel">速度</span>
       <select id="speed-sel">
-        <option value="900">遅い</option>
-        <option value="450" selected>普通</option>
-        <option value="150">速い</option>
-        <option value="40">超速</option>
+        <option value="900" data-i18n="speedSlow">遅い</option>
+        <option value="450" selected data-i18n="speedNormal">普通</option>
+        <option value="150" data-i18n="speedFast">速い</option>
+        <option value="40" data-i18n="speedSuper">超速</option>
       </select>
     </label>
   </div>
 
   <div class="settings-row">
     <label>
-      列数
+      <span data-i18n="colsLabel">列数</span>
       <input type="number" id="col-input" value="10" min="5" max="21" style="width:52px;">
     </label>
     <label>
-      上限
+      <span data-i18n="maxLabel">上限</span>
       <select id="max-sel">
         <option value="100">100</option>
         <option value="210" selected>210</option>
@@ -227,32 +240,125 @@
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--color-background-primary)"></div>未チェック</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--color-highlight-bg);border-color:var(--color-highlight-border)"></div>現在の素数</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--color-prime-bg);border-color:var(--color-prime-border)"></div>素数</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--color-notprime-bg);border-color:var(--color-notprime-border)"></div>素数でない</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-background-primary)"></div><span data-i18n="legendUnchecked">未チェック</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-highlight-bg);border-color:var(--color-highlight-border)"></div><span data-i18n="legendCurrent">現在の素数</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-prime-bg);border-color:var(--color-prime-border)"></div><span data-i18n="legendPrime">素数</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--color-notprime-bg);border-color:var(--color-notprime-border)"></div><span data-i18n="legendNotPrime">素数でない</span></div>
   </div>
 
   <div id="status-bar">
-    <span>「開始」ボタンを押して始めてください</span>
+    <span data-i18n="statusInitial">「開始」ボタンを押して始めてください</span>
   </div>
 
   <div class="main-area">
     <div class="grid-wrap">
       <div id="grid"></div>
       <div class="stats-row">
-        <div class="stat-card"><div class="val" id="stat-prime">0</div><div class="lbl">素数の個数</div></div>
-        <div class="stat-card"><div class="val" id="stat-step">0</div><div class="lbl">ステップ数</div></div>
+        <div class="stat-card"><div class="val" id="stat-prime">0</div><div class="lbl" data-i18n="statPrimeLabel">素数の個数</div></div>
+        <div class="stat-card"><div class="val" id="stat-step">0</div><div class="lbl" data-i18n="statStepLabel">ステップ数</div></div>
       </div>
     </div>
     <div class="history-panel">
-      <h3>ステップ履歴</h3>
-      <div id="history"><div class="h-item h-info">履歴はここに表示されます</div></div>
+      <h3 data-i18n="historyTitle">ステップ履歴</h3>
+      <div id="history"><div class="h-item h-info" data-i18n="historyEmpty">履歴はここに表示されます</div></div>
     </div>
   </div>
 </div>
 </div>
 
+<script>
+const SIEVE_I18N = {
+  ja: {
+    pageTitle: 'エラトステネスのふるい — 素数発見ツール',
+    srHeading: 'エラトステネスのふるい — 素数発見ツール（1〜210）',
+    themeToggleAria: 'ライトモードとダークモードを切り替え',
+    themeToggleLabelLight: 'ダークモード',
+    themeToggleLabelDark: 'ライトモード',
+    langToggleAria: '言語を切り替え',
+    headerTitle: 'エラトステネスのふるい',
+    headerSubtitle: '素数を見つけ出す視覚的なアルゴリズム',
+    btnStart: '開始',
+    btnNext: '次のステップ',
+    btnAutoStart: '自動実行',
+    btnAutoStop: '停止',
+    btnReset: 'リセット',
+    speedLabel: '速度',
+    speedSlow: '遅い', speedNormal: '普通', speedFast: '速い', speedSuper: '超速',
+    colsLabel: '列数', maxLabel: '上限',
+    legendUnchecked: '未チェック', legendCurrent: '現在の素数', legendPrime: '素数', legendNotPrime: '素数でない',
+    statusInitial: '「開始」ボタンを押して始めてください',
+    statPrimeLabel: '素数の個数', statStepLabel: 'ステップ数',
+    historyTitle: 'ステップ履歴', historyEmpty: '履歴はここに表示されます',
+    tagComplete: '完了',
+    statusFound: n => `素数 ${n} を発見`,
+    statusCrossing: n => `${n} の倍数を消していきます`,
+    statusComplete: (max, count) => `完了！1〜${max}の素数は ${count} 個`,
+    histStart: '開始',
+    histAutoStart: '自動実行を開始',
+    histIsPrime: n => `${n} は素数`,
+    histCandidate: n => `候補: ${n}`,
+    histRemoveAllMultiples: n => `${n} の倍数をすべて除去`,
+    histRemove: (m, base, idx) => `${m} を除去 (${base}×${idx})`,
+    histRemainingPrimes: list => `残りの素数をマーク: ${list}`,
+    histComplete: count => `完了: 素数 ${count} 個`
+  },
+  en: {
+    pageTitle: 'Sieve of Eratosthenes — Prime Number Finder',
+    srHeading: 'Sieve of Eratosthenes — Prime Number Finder (1–210)',
+    themeToggleAria: 'Toggle light and dark mode',
+    themeToggleLabelLight: 'Dark mode',
+    themeToggleLabelDark: 'Light mode',
+    langToggleAria: 'Switch language',
+    headerTitle: 'Sieve of Eratosthenes',
+    headerSubtitle: 'A visual algorithm for finding prime numbers',
+    btnStart: 'Start',
+    btnNext: 'Next step',
+    btnAutoStart: 'Auto run',
+    btnAutoStop: 'Stop',
+    btnReset: 'Reset',
+    speedLabel: 'Speed',
+    speedSlow: 'Slow', speedNormal: 'Normal', speedFast: 'Fast', speedSuper: 'Super fast',
+    colsLabel: 'Columns', maxLabel: 'Max',
+    legendUnchecked: 'Unchecked', legendCurrent: 'Current prime', legendPrime: 'Prime', legendNotPrime: 'Not prime',
+    statusInitial: 'Press "Start" to begin',
+    statPrimeLabel: 'Primes found', statStepLabel: 'Steps',
+    historyTitle: 'Step history', historyEmpty: 'History will appear here',
+    tagComplete: 'Done',
+    statusFound: n => `Found prime ${n}`,
+    statusCrossing: n => `Crossing out multiples of ${n}`,
+    statusComplete: (max, count) => `Done! There are ${count} primes between 1 and ${max}`,
+    histStart: 'Start',
+    histAutoStart: 'Started auto run',
+    histIsPrime: n => `${n} is prime`,
+    histCandidate: n => `Candidate: ${n}`,
+    histRemoveAllMultiples: n => `Removed all multiples of ${n}`,
+    histRemove: (m, base, idx) => `Removed ${m} (${base}×${idx})`,
+    histRemainingPrimes: list => `Marked remaining primes: ${list}`,
+    histComplete: count => `Done: ${count} primes`
+  }
+};
+let sieveLang = 'ja';
+function st(key, ...args) {
+  const v = SIEVE_I18N[sieveLang][key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+function applySieveLang() {
+  document.documentElement.lang = sieveLang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = st(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', st(el.dataset.i18nAria)); });
+  document.getElementById('lang-toggle-label').textContent = sieveLang === 'ja' ? 'EN' : 'JA';
+  const themeLabel = document.getElementById('theme-toggle-label');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  themeLabel.textContent = isDark ? st('themeToggleLabelDark') : st('themeToggleLabelLight');
+  if (window.sieveRefreshDynamic) window.sieveRefreshDynamic();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('lang-toggle').addEventListener('click', () => {
+    sieveLang = sieveLang === 'ja' ? 'en' : 'ja';
+    applySieveLang();
+  });
+});
+</script>
 <script>
 (function(){
   const STORAGE_KEY = 'eratosthenes-sieve-theme';
@@ -265,11 +371,11 @@
     if (theme === 'dark') {
       root.setAttribute('data-theme', 'dark');
       toggleIcon.textContent = '☀️';
-      toggleLabel.textContent = 'ライトモード';
+      toggleLabel.textContent = st('themeToggleLabelDark');
     } else {
       root.removeAttribute('data-theme');
       toggleIcon.textContent = '🌙';
-      toggleLabel.textContent = 'ダークモード';
+      toggleLabel.textContent = st('themeToggleLabelLight');
     }
   }
 
@@ -317,10 +423,22 @@
   let currentPrime = 1, primeCount = 0, stepCount = 0;
   let phase = 'find'; // 'find' | 'cross'
   let crossIdx = 0;
+  let statusKind = 'initial', statusArg = null;
 
   function setStatus(msg, tag) {
     statusEl.innerHTML = (tag ? `<span class="tag">${tag}</span>` : '') + `<span>${msg}</span>`;
   }
+
+  function renderStatus() {
+    if (statusKind === 'initial') setStatus(st('statusInitial'));
+    else if (statusKind === 'found') setStatus(st('statusFound', statusArg), statusArg.toString());
+    else if (statusKind === 'crossing') setStatus(st('statusCrossing', statusArg), statusArg.toString());
+    else if (statusKind === 'complete') setStatus(st('statusComplete', MAX, statusArg), st('tagComplete'));
+  }
+  window.sieveRefreshDynamic = function(){
+    renderStatus();
+    btnAuto.textContent = autoRunning ? st('btnAutoStop') : st('btnAutoStart');
+  };
 
   function addHistory(msg, type) {
     if (histEl.querySelector('.h-info') && histEl.children.length === 1) histEl.innerHTML = '';
@@ -357,8 +475,9 @@
     statPrime.textContent = primeCount;
     stepCount++;
     statStep.textContent = stepCount;
-    addHistory(`${currentPrime} は素数`, 'prime');
-    setStatus(`${currentPrime} の倍数を消していきます`, currentPrime.toString());
+    addHistory(st('histIsPrime', currentPrime), 'prime');
+    statusKind = 'crossing'; statusArg = currentPrime;
+    setStatus(st('statusCrossing', currentPrime), currentPrime.toString());
     crossIdx = 2;
     phase = 'cross';
   }
@@ -366,7 +485,7 @@
   function crossStep() {
     const m = currentPrime * crossIdx;
     if (m > MAX) {
-      addHistory(`${currentPrime} の倍数をすべて除去`, 'info');
+      addHistory(st('histRemoveAllMultiples', currentPrime), 'info');
       stepCount++;
       statStep.textContent = stepCount;
       phase = 'find';
@@ -377,7 +496,7 @@
     if (obj && !obj.crossed && !obj.prime) {
       obj.el.classList.add('not-prime');
       obj.crossed = true;
-      addHistory(`${m} を除去 (${currentPrime}×${crossIdx})`, 'cross');
+      addHistory(st('histRemove', m, currentPrime, crossIdx), 'cross');
     }
     crossIdx++;
     stepCount++;
@@ -389,8 +508,9 @@
     if (!next) { finish(); return; }
     currentPrime = next.n;
     next.el.classList.add('highlighted');
-    setStatus(`素数 ${currentPrime} を発見`, currentPrime.toString());
-    addHistory(`候補: ${currentPrime}`, 'prime');
+    statusKind = 'found'; statusArg = currentPrime;
+    setStatus(st('statusFound', currentPrime), currentPrime.toString());
+    addHistory(st('histCandidate', currentPrime), 'prime');
     phase = 'find';
   }
 
@@ -418,7 +538,7 @@
     });
     if (more.length) {
       statPrime.textContent = primeCount;
-      addHistory(`残りの素数をマーク: ${more.join(', ')}`, 'prime');
+      addHistory(st('histRemainingPrimes', more.join(', ')), 'prime');
       finish();
     }
   }
@@ -427,16 +547,17 @@
     stopAuto();
     btnNext.disabled = true;
     btnAuto.disabled = true;
-    setStatus(`完了！1〜${MAX}の素数は ${primeCount} 個`, '完了');
-    addHistory(`完了: 素数 ${primeCount} 個`, 'info');
+    statusKind = 'complete'; statusArg = primeCount;
+    setStatus(st('statusComplete', MAX, primeCount), st('tagComplete'));
+    addHistory(st('histComplete', primeCount), 'info');
   }
 
   function startAuto() {
     autoRunning = true;
-    btnAuto.textContent = '停止';
+    btnAuto.textContent = st('btnAutoStop');
     btnAuto.classList.add('danger');
     btnNext.disabled = true;
-    addHistory('自動実行を開始', 'info');
+    addHistory(st('histAutoStart'), 'info');
     const spd = parseInt(speedSel.value);
     timer = setInterval(processStep, spd);
   }
@@ -445,7 +566,7 @@
     if (!autoRunning) return;
     autoRunning = false;
     clearInterval(timer); timer = null;
-    btnAuto.textContent = '自動実行';
+    btnAuto.textContent = st('btnAutoStart');
     btnAuto.classList.remove('danger');
     btnNext.disabled = false;
   }
@@ -455,8 +576,9 @@
     started = false; currentPrime = 1; primeCount = 0; stepCount = 0; phase = 'find'; crossIdx = 0;
     statPrime.textContent = 0; statStep.textContent = 0;
     btnStart.disabled = false; btnNext.disabled = true; btnAuto.disabled = true; btnReset.disabled = true;
-    histEl.innerHTML = '<div class="h-item h-info">履歴はここに表示されます</div>';
-    setStatus('「開始」ボタンを押して始めてください');
+    histEl.innerHTML = `<div class="h-item h-info">${st('historyEmpty')}</div>`;
+    statusKind = 'initial'; statusArg = null;
+    setStatus(st('statusInitial'));
     MAX = parseInt(maxSel.value);
     COLS = parseInt(colInput.value) || 10;
     buildGrid();
@@ -468,7 +590,7 @@
     btnNext.disabled = false;
     btnAuto.disabled = false;
     btnReset.disabled = false;
-    addHistory('開始', 'info');
+    addHistory(st('histStart'), 'info');
     findAndHighlight();
   });
 
